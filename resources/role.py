@@ -1,7 +1,7 @@
-from flask import jsonify
 from flask_restful import Resource, reqparse
-from models.role import RoleModel
 from db_app import db
+from models.role import RoleModel
+
 
 class Role(Resource):
     def __init__(self):

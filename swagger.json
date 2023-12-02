@@ -5,31 +5,30 @@
     "description": "A sample API for testing Swagger UI",
     "version": "1.0.0"
   },
-  "paths": {
-    "/": {
-      "get": {
-        "summary": "Get a hello message",
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Operations related to users"
     },
+    {
+      "name": "Roles",
+      "description": "Operations related to roles"
+    },
+    {
+      "name": "Students",
+      "description": "Operations related to students"
+    },
+    {
+      "name": "Majors",
+      "description": "Operations related to majors"
+    }
+  ],
+  "paths": {
     "/users": {
       "get": {
+        "tags": [
+          "Users"
+        ],
         "summary": "Get a list of users",
         "responses": {
           "200": {
@@ -60,6 +59,9 @@
       },
       "post": {
         "summary": "Create a new user",
+        "tags": [
+          "Users"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -76,7 +78,11 @@
                     "type": "integer"
                   }
                 },
-                "required": ["email", "password", "id_role"]
+                "required": [
+                  "email",
+                  "password",
+                  "id_role"
+                ]
               }
             }
           }
@@ -103,6 +109,9 @@
     "/role": {
       "post": {
         "summary": "Create a new role",
+        "tags": [
+          "Roles"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -113,7 +122,9 @@
                     "type": "string"
                   }
                 },
-                "required": ["name"]
+                "required": [
+                  "name"
+                ]
               }
             }
           }
@@ -128,6 +139,155 @@
                   "properties": {
                     "message": {
                       "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/students": {
+      "post": {
+        "summary": "Create a new student",
+        "tags": [
+          "Students"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "lastname": {
+                    "type": "string"
+                  },
+                  "firstname": {
+                    "type": "string"
+                  },
+                  "id_status": {
+                    "type": "integer"
+                  },
+                  "id_major": {
+                    "type": "integer"
+                  },
+                  "is_blocked": {
+                    "type": "boolean"
+                  },
+                  "id_sex": {
+                    "type": "integer"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "details_completed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password",
+                  "lastname",
+                  "firstname",
+                  "id_status",
+                  "id_major",
+                  "is_blocked",
+                  "id_sex",
+                  "details_completed"
+                ]
+              }
+            }
+          }
+
+        },
+        "responses": {
+            "201": {
+              "description": "Student created successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+      }
+    },
+    "/majors": {
+      "post": {
+        "summary": "Create a new major",
+        "tags": [
+          "Majors"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Major created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a list of majors",
+        "tags": [
+          "Majors"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
                     }
                   }
                 }

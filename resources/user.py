@@ -3,6 +3,7 @@ from flask_restful import Resource, reqparse
 from models.user import UserModel
 from db_app import db
 
+
 class User(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()

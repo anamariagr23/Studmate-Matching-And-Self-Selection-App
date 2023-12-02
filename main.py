@@ -5,6 +5,8 @@ from flask_swagger_ui import get_swaggerui_blueprint
 import json
 from resources.user import User
 from resources.role import Role
+from resources.student import Student
+from resources.major import Major
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/studmate'
@@ -12,11 +14,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 api = Api(app)
 
-# Add the resources to the API
 api.add_resource(User, '/users')
 api.add_resource(Role, '/role')
+api.add_resource(Student, '/students')
+api.add_resource(Major, '/majors')
 
-# Configure Swagger UI
 SWAGGER_URL = '/swagger'
 API_URL = '/swagger.json'
 swaggerui_blueprint = get_swaggerui_blueprint(
