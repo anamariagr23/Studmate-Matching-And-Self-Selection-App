@@ -2,6 +2,7 @@ from flask import jsonify
 from flask_restful import Resource, reqparse
 from models.user import UserModel
 from db_app import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class User(Resource):
@@ -18,7 +19,8 @@ class User(Resource):
 
     def post(self):
         args = self.parser.parse_args()
-        new_user = UserModel(email=args['email'], password=args['password'], id_role=args['id_role'])
+        new_user = UserModel(email=args['email'], password=generate_password_hash(args['password']),
+                             id_role=args['id_role'])
         db.session.add(new_user)
         db.session.commit()
         return {'message': 'User created successfully'}, 201

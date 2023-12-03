@@ -1,5 +1,9 @@
+import os
+
 from flask import Flask, jsonify
 from flask_restful import Api
+
+from auth_middleware import token_required
 from db_app import db
 from flask_swagger_ui import get_swaggerui_blueprint
 import json
@@ -11,6 +15,9 @@ from resources.major import Major
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/studmate'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# TO DO figure out how to do this with environment variables later
+app.config['SECRET_KEY'] = "b'7P?DG/tX<siHk"
+
 db.init_app(app)
 api = Api(app)
 
