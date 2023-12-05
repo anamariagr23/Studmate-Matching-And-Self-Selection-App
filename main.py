@@ -2,11 +2,13 @@ import os
 
 from flask import Flask, jsonify
 from flask_restful import Api
-
+from flask_cors import CORS
 from auth_middleware import token_required
 from db_app import db
 from flask_swagger_ui import get_swaggerui_blueprint
 import json
+
+from resources.login import Login
 from resources.user import User
 from resources.role import Role
 from resources.student import Student
@@ -20,11 +22,13 @@ app.config['SECRET_KEY'] = "b'7P?DG/tX<siHk"
 
 db.init_app(app)
 api = Api(app)
+CORS(app, supports_credentials=True, methods=["GET", "POST", "PUT", "DELETE"], allow_headers=["Content-Type"])
 
 api.add_resource(User, '/users')
 api.add_resource(Role, '/role')
 api.add_resource(Student, '/students')
 api.add_resource(Major, '/majors')
+api.add_resource(Login, '/login', resource_class_kwargs={'secret_key': app.config['SECRET_KEY']})
 
 SWAGGER_URL = '/swagger'
 API_URL = '/swagger.json'

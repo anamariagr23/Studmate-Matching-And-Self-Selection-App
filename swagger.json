@@ -24,6 +24,49 @@
     }
   ],
   "paths": {
+    "/login": {
+      "post": {
+        "summary": "User login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully fetched auth token",
+            "content": {
+              "application/json": {
+                "schema": {
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error fetching auth token! Invalid email or password",
+            "content": {
+              "application/json": {
+                "schema": {
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/users": {
       "get": {
         "tags": [
@@ -205,25 +248,24 @@
               }
             }
           }
-
         },
         "responses": {
-            "201": {
-              "description": "Student created successfully",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string"
-                      }
+          "201": {
+            "description": "Student created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
               }
             }
           }
+        }
       }
     },
     "/majors": {
