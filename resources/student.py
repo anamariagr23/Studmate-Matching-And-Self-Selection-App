@@ -1,11 +1,15 @@
 from flask import request
 from flask_restful import Resource
+
+from auth_middleware import token_required
 from db_app import db
 from models.student import StudentModel
 from models.user import UserModel
 
 
 class Student(Resource):
+    method_decorators = {'post': [token_required]}
+
     def post(self):
         data = request.get_json()
 
