@@ -7,6 +7,8 @@ from models.user import UserModel
 # import jsonpickle
 from flask import jsonify
 
+from models.user_authentication_response import UserAuthenticationResponse
+
 
 class Login(Resource):
     def __init__(self, secret_key):
@@ -26,19 +28,16 @@ class Login(Resource):
             is_validated = True
             if is_validated is not True:
                 return dict(message='Invalid data', data=None, error=is_validated), 400
-            user = UserModel().login(
-                data["email"],
-                data["password"]
-            )
-            if user:
+            auth_response = UserAuthenticationResponse.login(data['email'], data['password'])
+            if auth_response:
                 try:
                     # token should expire after 24 hrs
-                    token = jwt.encode({"id": user.id}, self.secret_key, algorithm="HS256")
-                    user.add_token(token)
+                    token = jwt.encode({"id": auth_response.user.id}, self.secret_key, algorithm="HS256")
+                    auth_response.add_token(token)
 
                     return {
                         "message": "Successfully fetched auth token",
-                        "data": user.serialize
+                        "data": auth_response.serialize()
                     }
                 except Exception as e:
                     return {
