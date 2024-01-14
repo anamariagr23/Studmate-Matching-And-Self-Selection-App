@@ -16,6 +16,7 @@ class StudentModel(db.Model):
     id_sex = db.Column(db.Integer, db.ForeignKey('studmate.sex.id'), nullable=True)
     description = db.Column(db.String(255))
     details_completed = db.Column(db.Boolean, nullable=False, default=False)
+    avatar_link = db.Column(db.String(500))
 
     user = db.relationship(UserModel, backref='student', uselist=False)
 
