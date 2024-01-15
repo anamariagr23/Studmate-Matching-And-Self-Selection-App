@@ -1,21 +1,32 @@
-from flask import request, current_app
+from flask import request, current_app, jsonify
 from flask_restful import Resource
 import jwt
+from imgurpython import ImgurClient
 
 from auth_middleware import token_required
 from db_app import db
 from models.student import StudentModel
 
+IMGUR_CLIENT_ID = '3d7b454efa9e6b8'
+IMGUR_CLIENT_SECRET = 'c587e08ce1f4b5a0191e20a41875ff4906fa6a50'
 
+client = ImgurClient(IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET)
 class Student(Resource):
-    method_decorators = {'post': [token_required]}
+    # method_decorators = {'post': [token_required]}
 
     def post(self):
-        data = request.get_json()
+        data = request.form
 
-        # new_user = UserModel(email=data['email'], password=data['password'], id_role=3)
-        # db.session.add(new_user)
-        # db.session.flush()
+        if 'avatar' not in request.files:
+            return jsonify({'error': 'No file part'})
+
+        file = request.files['avatar']
+
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'})
+
+        uploaded_image = client.upload_from_path(file.filename, config=None, anon=False)
+
         if "Authorization" in request.headers:
             token = request.headers["Authorization"].split(" ")[1]
             data = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
@@ -28,7 +39,8 @@ class Student(Resource):
                 is_blocked=data['is_blocked'],
                 id_sex=data['id_sex'],
                 description=data['description'],
-                details_completed=data['details_completed']
+                details_completed=data['details_completed'],
+                avatar_link=uploaded_image['link']
             )
             db.session.add(new_student)
             db.session.commit()
