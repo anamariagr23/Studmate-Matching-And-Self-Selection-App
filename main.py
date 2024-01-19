@@ -8,6 +8,7 @@ from db_app import db
 from flask_swagger_ui import get_swaggerui_blueprint
 import json
 
+
 from resources.login import Login
 from resources.user import User
 from resources.role import Role
@@ -22,7 +23,7 @@ app.config['SECRET_KEY'] = "b'7P?DG/tX<siHk"
 
 db.init_app(app)
 api = Api(app)
-CORS(app, supports_credentials=True, methods=["GET", "POST", "PUT", "DELETE"], allow_headers=["Content-Type"])
+CORS(app, supports_credentials=True, methods=["GET", "POST", "PUT", "DELETE"], allow_headers=["Content-Type", "Authorization"])
 
 api.add_resource(User, '/users')
 api.add_resource(Role, '/role')
