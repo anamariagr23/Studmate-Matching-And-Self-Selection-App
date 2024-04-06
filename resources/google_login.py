@@ -20,7 +20,8 @@ class GoogleLogin(Resource):
             return {'message': 'No credential token provided'}, 400
 
         try:
-            idinfo = google.oauth2.id_token.verify_oauth2_token(token, google.auth.transport.requests.Request(), '676203278903-vpp4otb0bmettevls0eh5trurjshi5u2.apps.googleusercontent.com')
+            idinfo = google.oauth2.id_token.verify_oauth2_token(token, google.auth.transport.requests.Request(),
+                                                                '676203278903-vpp4otb0bmettevls0eh5trurjshi5u2.apps.googleusercontent.com')
 
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise ValueError('Wrong issuer.')
@@ -46,13 +47,13 @@ class GoogleLogin(Resource):
                 )
                 db.session.add(new_student)
                 db.session.commit()
-            else:
-                token = jwt.encode({"id": auth_response.user.id}, self.secret_key, algorithm="HS256")
-                auth_response.add_token(token)
-                return {
-                    "message": "Successfully fetched auth token",
+                auth_response = UserAuthenticationResponse.googleLogin(idinfo['email'])
+
+            token = jwt.encode({"id": auth_response.user.id}, self.secret_key, algorithm="HS256")
+            auth_response.add_token(token)
+            return {"message": "Successfully fetched auth token",
                     "data": auth_response.serialize()
-                }
+                    }
 
         except ValueError as e:
             return {'message': str(e)}, 401

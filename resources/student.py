@@ -9,10 +9,9 @@ import requests
 IMGUR_CLIENT_ID = '3d7b454efa9e6b8'
 IMGUR_CLIENT_SECRET = 'c587e08ce1f4b5a0191e20a41875ff4906fa6a50'
 
+
 # imgur_client = Imgur({"client_id": IMGUR_CLIENT_ID,
 #                       "client_secret": IMGUR_CLIENT_SECRET})
-
-
 
 
 class Student(Resource):
@@ -21,21 +20,21 @@ class Student(Resource):
     def post(self):
         data = flask_request.form
 
-        if 'file' not in flask_request.files:
-            return jsonify({'error': 'No file part'})
+        # if 'file' not in flask_request.files:
+        #     return jsonify({'error': 'No file part'})
+        #
+        # file = flask_request.files['file']
+        #
+        # if file.filename == '':
+        #     return jsonify({'error': 'No selected file'})
 
-        file = flask_request.files['file']
-
-        if file.filename == '':
-            return jsonify({'error': 'No selected file'})
-
-        url = "https://api.imgur.com/3/image"
-        payload = {'image': flask_request.files['file'].read()}
-        files = []
-        headers = {
-            'Authorization': 'Client-ID 3d7b454efa9e6b8'
-        }
-        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+        # url = "https://api.imgur.com/3/image"
+        # payload = {'image': flask_request.files['file'].read()}
+        # files = []
+        # headers = {
+        #     'Authorization': 'Client-ID e4375b375a003c4'
+        # }
+        # response = requests.request("POST", url, headers=headers, data=payload, files=files)
 
         if "Authorization" in flask_request.headers:
             token = flask_request.headers["Authorization"].split(" ")[1]
@@ -50,7 +49,7 @@ class Student(Resource):
                 id_sex=data['sex'],
                 description=data['description'],
                 details_completed=True,
-                avatar_link=response.json()['data']['link']
+                avatar_link=None
             )
             db.session.add(new_student)
             db.session.commit()
@@ -79,4 +78,3 @@ class Student(Resource):
             # It's a good practice to log the actual error for debugging
             current_app.logger.error(f"Error fetching students: {e}")
             return {'error': 'Error fetching students'}, 500
-
