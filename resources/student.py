@@ -17,7 +17,7 @@ IMGUR_CLIENT_SECRET = 'c587e08ce1f4b5a0191e20a41875ff4906fa6a50'
 class Student(Resource):
     # method_decorators = {'post': [token_required]}
 
-    def post(self):
+    def patch(self):
         data = flask_request.form
 
         # if 'file' not in flask_request.files:
@@ -39,19 +39,31 @@ class Student(Resource):
         if "Authorization" in flask_request.headers:
             token = flask_request.headers["Authorization"].split(" ")[1]
             decoded_token = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
-            new_student = StudentModel(
-                id=decoded_token['id'],
-                lastname=data['lastname'],
-                firstname=data['firstname'],
-                id_status=1,
-                id_major=data['major'],
-                is_blocked=False,
-                id_sex=data['sex'],
-                description=data['description'],
-                details_completed=True,
-                avatar_link=None
-            )
-            db.session.add(new_student)
+
+            updated_student = StudentModel.query.filter_by(id=decoded_token['id']).one()
+
+            updated_student.firstname = data['firstname']
+            updated_student.lastname = data['lastname']
+            updated_student.id_status = 1
+            updated_student.id_major = data['major']
+            updated_student.is_blocked = False
+            updated_student.id_sex = data['sex']
+            updated_student.description = data['description']
+            updated_student.details_completed = True
+
+            # updated_student = StudentModel(
+            #     id=decoded_token['id'],
+            #     lastname=data['lastname'],
+            #     firstname=data['firstname'],
+            #     id_status=1,
+            #     id_major=data['major'],
+            #     is_blocked=False,
+            #     id_sex=data['sex'],
+            #     description=data['description'],
+            #     details_completed=True,
+            #     avatar_link=None
+            # )
+            # db.session.update(updated_student)
             db.session.commit()
             return {'message': 'Student created successfully'}, 201
         else:

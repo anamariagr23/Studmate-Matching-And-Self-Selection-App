@@ -19,6 +19,7 @@ class StudentModel(db.Model):
     avatar_link = db.Column(db.String(500))
 
     user = db.relationship(UserModel, backref='student', uselist=False)
+    self_descriptions = db.relationship('CategoryStudentSelfDescriptionModel', backref='student', lazy='dynamic')
 
     def __repr__(self):
         return f'<Student(id={self.id}, firstname={self.firstname}, lastname={self.lastname})>'
