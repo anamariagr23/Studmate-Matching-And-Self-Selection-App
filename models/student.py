@@ -3,6 +3,7 @@ from models.user import UserModel
 from models.status import StatusModel
 from models.sex import SexModel
 
+
 class StudentModel(db.Model):
     __tablename__ = 'student'
     __table_args__ = {'schema': 'studmate'}
@@ -17,9 +18,6 @@ class StudentModel(db.Model):
     description = db.Column(db.String(255))
     details_completed = db.Column(db.Boolean, nullable=False)
     avatar_link = db.Column(db.String(500))
+    year_of_study = db.Column(db.Integer, nullable=True)
 
     user = db.relationship(UserModel, backref='student', uselist=False)
-    self_descriptions = db.relationship('CategoryStudentSelfDescriptionModel', backref='student', lazy='dynamic')
-
-    def __repr__(self):
-        return f'<Student(id={self.id}, firstname={self.firstname}, lastname={self.lastname})>'

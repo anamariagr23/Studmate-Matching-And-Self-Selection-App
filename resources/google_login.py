@@ -29,7 +29,6 @@ class GoogleLogin(Resource):
             userid = idinfo['sub']
 
             auth_response = UserAuthenticationResponse.googleLogin(idinfo['email'])
-            # bug that needs to be fixed: user should be able to log in after his user is created
             if auth_response is None:
                 new_user = UserModel(email=idinfo['email'], password='',
                                      id_role=3)

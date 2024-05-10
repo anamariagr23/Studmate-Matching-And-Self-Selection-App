@@ -1,6 +1,5 @@
 from db_app import db
 
-
 class CategoryStudentSelfDescriptionModel(db.Model):
     __tablename__ = 'category_student_self_description'
     __table_args__ = {'schema': 'studmate'}
