@@ -1,4 +1,7 @@
 from db_app import db
+from werkzeug.security import generate_password_hash, check_password_hash
+import json
+
 
 class UserModel(db.Model):
     __tablename__ = 'user'
@@ -9,5 +12,9 @@ class UserModel(db.Model):
     password = db.Column(db.String(255), nullable=False)
     id_role = db.Column(db.Integer, nullable=False)
 
-    def __repr__(self):
-        return f'<User {self.email}>'
+    @classmethod
+    def get_user_by_email(cls, email):
+        return cls.query.filter_by(email=email).first()
+
+    def is_student(self):
+        return self.id_role == 3
