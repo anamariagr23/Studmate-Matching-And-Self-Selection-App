@@ -33,6 +33,13 @@ class UserAuthenticationResponse:
             return None
         return UserAuthenticationResponse(user)
 
+    @staticmethod
+    def googleLogin(email):
+        user = UserModel.get_user_by_email(email)
+        if not user:
+            return None
+        return UserAuthenticationResponse(user)
+
     def _fetch_student_details(self):
         if self.user.is_student():
             student = StudentModel.query.filter_by(id=self.user.id).first()
