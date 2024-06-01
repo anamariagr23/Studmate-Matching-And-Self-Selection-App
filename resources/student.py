@@ -51,6 +51,7 @@ class Student(Resource):
             updated_student.id_sex = data['sex']
             updated_student.description = data['description']
             updated_student.details_completed = True
+            updated_student.dorm_id = data['dorm']
             updated_student.year_of_study = data['year_of_study']
 
             categories = [
@@ -116,6 +117,7 @@ class Student(Resource):
                 'id_sex': student.id_sex,
                 'description': student.description,
                 'details_completed': student.details_completed,
+                'dorm_id': student.dorm_id,
                 'avatar_link': student.avatar_link,
                 'year_of_study': student.year_of_study
             } for student in students]

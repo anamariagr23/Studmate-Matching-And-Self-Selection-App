@@ -5,4 +5,4 @@ class CategoryModel(db.Model):
     __table_args__ = {'schema': 'studmate'}
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
+    title = db.Column(db.String(255), nullable=False)

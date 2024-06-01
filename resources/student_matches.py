@@ -12,7 +12,7 @@ class StudentMatches(Resource):
 
     def get(self):
         if "Authorization" in flask_request.headers:
-            token = flask_request.headers["Authorization"].split(" ")[0]
+            token = flask_request.headers["Authorization"].split(" ")[1]
             decoded_token = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
 
             student_id=decoded_token['id']
