@@ -14,6 +14,11 @@ class GoogleLogin(Resource):
     def __init__(self, secret_key):
         self.secret_key = secret_key
 
+    def get_high_res_avatar_url(self, avatar_url: str, resolution: str = 's400-c') -> str:
+        if 's96-c' in avatar_url:
+            return avatar_url.replace('s96-c', resolution)
+        return avatar_url
+
     def post(self):
         token = request.form.get('credential')
         if not token:
@@ -42,7 +47,7 @@ class GoogleLogin(Resource):
                     id_status=1,
                     is_blocked=False,
                     details_completed=False,
-                    avatar_link=idinfo['picture']
+                    avatar_link=self.get_high_res_avatar_url(idinfo['picture'])
                 )
                 db.session.add(new_student)
                 db.session.commit()

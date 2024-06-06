@@ -20,6 +20,7 @@ from resources.dorm import Dorm
 from resources.sex import Sex
 from resources.google_login import GoogleLogin
 from resources.student_matches import StudentMatches
+from resources.student_profile import StudentProfile
 from services.relationships import configure_relationships
 
 app = Flask(__name__)
@@ -41,6 +42,7 @@ api.add_resource(Dorm, '/dorms')
 api.add_resource(Sex, '/sexes')
 api.add_resource(Login, '/login', resource_class_kwargs={'secret_key': app.config['SECRET_KEY']})
 api.add_resource(GoogleLogin, '/google-login', resource_class_kwargs={'secret_key': app.config['SECRET_KEY']})
+api.add_resource(StudentProfile, '/student/<int:student_id>', resource_class_kwargs={'secret_key': app.config['SECRET_KEY']})
 api.add_resource(StudentMatches, '/student-matches', resource_class_kwargs={'secret_key': app.config['SECRET_KEY']})
 
 SWAGGER_URL = '/swagger'
