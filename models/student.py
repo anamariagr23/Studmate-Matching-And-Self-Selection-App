@@ -25,3 +25,4 @@ class StudentModel(db.Model):
     user = db.relationship(UserModel, backref='student', uselist=False)
     status = db.relationship(StatusModel, backref='students')
     major = db.relationship(MajorModel, backref='students')
+    messages = db.relationship('Message', backref='author', lazy=True)
