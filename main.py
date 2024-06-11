@@ -1,7 +1,10 @@
 import os
 import ssl
+from models.message import Message
+
 import eventlet
 from eventlet import wsgi
+from flask_socketio import join_room, emit, leave_room
 
 # eventlet.monkey_patch()
 
@@ -58,7 +61,7 @@ api.add_resource(StudentProfile, '/student/<int:student_id>',
 api.add_resource(StudentMatches, '/student-matches', resource_class_kwargs={'secret_key': app.config['SECRET_KEY']})
 api.add_resource(SendMessage, '/send-message')
 api.add_resource(StartConversation, '/start-conversation')
-api.add_resource(GetConversation, '/get-conversation/<int:conversation_id>')
+api.add_resource(GetConversation, '/get-conversation/<int:user_id>')
 api.add_resource(GetConversations, '/get-conversations')
 
 SWAGGER_URL = '/swagger'
@@ -79,24 +82,53 @@ def swagger():
         return jsonify(json.load(f))
 
 
-@app.route("/send-message", methods=["POST"])
-def send_message():
-    data = request.json
-    message = data.get("message")
-    username = data.get("username")
-    socketio.emit("receive_message", {"message": message, "username": username})
-    return jsonify({"status": "Message sent"}), 200
+# @app.route("/send-message", methods=["POST"])
+# def send_message():
+#     data = request.json
+#     message = data.get("message")
+#     username = data.get("username")
+#     socketio.emit("receive_message", {"message": message, "username": username})
+#     return jsonify({"status": "Message sent"}), 200
 
 
 @socketio.on("connect")
 def handle_connect():
     print("Client connected")
 
-
 @socketio.on("disconnect")
 def handle_disconnect():
     print("Client disconnected")
 
+@socketio.on("join")
+def handle_join(data):
+    room = data['room']
+    join_room(room)
+    emit('user_joined', {'room': room}, room=room)
+
+@socketio.on("leave")
+def handle_leave(data):
+    room = data['room']
+    leave_room(room)
+    emit('user_left', {'room': room}, room=room)
+
+@socketio.on("message")
+def handle_message(data):
+    room = data['room']
+    message_value = data['message']
+    author_id = data['author_id']
+
+    # Save message to the database
+    new_message = Message(conversation_id=room, author_id=author_id, value=message_value)
+    db.session.add(new_message)
+    db.session.commit()
+
+    # Emit the message to all clients in the room
+    emit('message', {
+        'conversation_id': room,
+        'author_id': author_id,
+        'value': message_value,
+        'sent_at': new_message.sent_at.isoformat()
+    }, room=room)
 
 if __name__ == "__main__":
     with app.app_context():

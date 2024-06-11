@@ -26,20 +26,25 @@ class SendMessage(Resource):
         db.session.add(message)
         db.session.commit()
 
+        last_message = {
+            "id": message.id,
+            "author_id": message.author_id,
+            "value": message.value,
+            "parent_message_id": message.parent_message_id,
+            "sent_at": message.sent_at.isoformat(),
+            "edited_at": message.edited_at.isoformat() if message.edited_at else None
+        }
+
+        # Emit the message to update conversations
         socketio.emit("receive_message", {
             "conversation_id": conversation_id,
-            "author_id": author_id,
-            "value": value,
-            "parent_message_id": parent_message_id,
-            "sent_at": message.sent_at.isoformat(),
-            "edited_at": message.edited_at.isoformat()
+            "last_message": last_message
         })
 
         return {"status": "Message sent"}, 200
 
 class StartConversation(Resource):
-    def post(self):
-        data = request.json
+    def create_new_conversation(self, data):
         user_ids = data.get("user_ids")
 
         conversation = Conversation()
@@ -54,10 +59,37 @@ class StartConversation(Resource):
 
         return {"conversation_id": conversation.id}, 201
 
+    def post(self):
+        data = request.json
+        return self.create_new_conversation(data)
+
+
 class GetConversation(Resource):
-    def get(self, conversation_id):
-        conversation = Conversation.query.get_or_404(conversation_id)
-        messages = Message.query.filter_by(conversation_id=conversation_id).all()
+    def get(self, user_id):
+        token = request.headers.get("Authorization").split(" ")[1]
+        decoded_token = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
+        current_user_id = decoded_token['id']
+
+        # Get all conversation IDs for the current user
+        user_conversations = db.session.query(ConversationUser.conversation_id).filter(
+            ConversationUser.student_id == current_user_id
+        ).subquery()
+
+        # Check if any of these conversations also include the other user
+        conversation = db.session.query(Conversation).join(ConversationUser).filter(
+            Conversation.id.in_(user_conversations),
+            ConversationUser.student_id == user_id
+        ).first()
+
+        if not conversation:
+            # If no conversation exists, create a new one
+            start_conversation = StartConversation()
+            data = {'user_ids': [current_user_id, user_id]}
+            response, status_code = start_conversation.create_new_conversation(data)
+            conversation_id = response['conversation_id']
+            conversation = Conversation.query.get(conversation_id)
+
+        messages = Message.query.filter_by(conversation_id=conversation.id).all()
         return {
             "conversation_id": conversation.id,
             "created_at": conversation.created_at.isoformat(),
