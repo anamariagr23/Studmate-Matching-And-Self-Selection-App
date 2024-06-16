@@ -1,4 +1,5 @@
 
+
 from flask import request, jsonify, current_app
 from flask_restful import Resource
 from db_app import db, socketio
@@ -7,6 +8,7 @@ from models.conversation_user import ConversationUser
 from models.message import Message
 from models.student import StudentModel
 import jwt
+from services.encryption_util import encrypt_message, decrypt_message
 
 class SendMessage(Resource):
     def post(self):
@@ -16,10 +18,14 @@ class SendMessage(Resource):
         value = data.get("value")
         parent_message_id = data.get("parent_message_id")
 
+        encrypted_value = encrypt_message(value)
+        print(f"Original value: {value}")
+        print(f"Encrypted value: {encrypted_value}")
+
         message = Message(
             conversation_id=conversation_id,
             author_id=author_id,
-            value=value,
+            value=encrypted_value,
             parent_message_id=parent_message_id
         )
 
@@ -29,7 +35,7 @@ class SendMessage(Resource):
         last_message = {
             "id": message.id,
             "author_id": message.author_id,
-            "value": message.value,
+            "value": value,  # Send the decrypted value for the response
             "parent_message_id": message.parent_message_id,
             "sent_at": message.sent_at.isoformat(),
             "edited_at": message.edited_at.isoformat() if message.edited_at else None
@@ -94,7 +100,7 @@ class GetConversation(Resource):
             "conversation_id": conversation.id,
             "created_at": conversation.created_at.isoformat(),
             "updated_at": conversation.updated_at.isoformat(),
-            "messages": [{"id": m.id, "author_id": m.author_id, "value": m.value,
+            "messages": [{"id": m.id, "author_id": m.author_id, "value": decrypt_message(m.value),
                           "parent_message_id": m.parent_message_id,
                           "sent_at": m.sent_at.isoformat(), "edited_at": m.edited_at.isoformat()}
                          for m in messages]
@@ -141,10 +147,9 @@ class GetConversations(Resource):
                     'last_message': {
                         'id': last_message.id,
                         'author_id': last_message.author_id,
-                        'value': last_message.value,
-                        'sent_at': last_message.sent_at.isoformat()
+                        'value': decrypt_message(last_message.value) if last_message else None,
+                        'sent_at': last_message.sent_at.isoformat() if last_message else None
                     } if last_message else None,
-
                 }
                 students_data.append(conversation_student_info)
 
