@@ -13,7 +13,7 @@ import json
 from resources.login import Login
 from resources.user import User
 from resources.role import Role
-from resources.student import Student
+from resources.student import Student, StudentCategories
 from resources.major import Major
 from resources.dorm import Dorm
 from resources.sex import Sex
@@ -23,7 +23,8 @@ from resources.student_profile import StudentProfile
 from services.encryption_util import encrypt_message
 from services.relationships import configure_relationships
 from resources.chat import SendMessage, StartConversation, GetConversation, GetConversations
-from resources.roomate_request import RoommateRequest, GetUnviewedRequests, MarkRequestsViewed, RoomateCheckRequest
+from resources.roomate_request import RoommateRequest, GetUnviewedRequests, MarkRequestsViewed, RoomateCheckRequest, \
+    GetAllRequests
 
 app = create_app()
 api = Api(app)
@@ -33,6 +34,7 @@ CORS(app, supports_credentials=True, methods=["GET", "POST", "PUT", "DELETE", "P
 api.add_resource(User, '/users')
 api.add_resource(Role, '/role')
 api.add_resource(Student, '/students')
+api.add_resource(StudentCategories, '/student')
 api.add_resource(Major, '/majors')
 api.add_resource(Dorm, '/dorms')
 api.add_resource(Sex, '/sexes')
@@ -46,6 +48,7 @@ api.add_resource(StartConversation, '/start-conversation')
 api.add_resource(GetConversation, '/get-conversation/<int:user_id>')
 api.add_resource(GetConversations, '/get-conversations')
 api.add_resource(RoommateRequest, '/roommate_requests', '/roommate_requests/<int:request_id>',  '/roommate_requests/target/<int:target_id>')
+api.add_resource(GetAllRequests, '/roommate_requests_all')
 api.add_resource(GetUnviewedRequests, '/get_unviewed_requests/<int:user_id>')
 api.add_resource(MarkRequestsViewed, '/mark_requests_viewed')
 api.add_resource(RoomateCheckRequest, '/check_request/<int:requester_id>/<int:target_id>')

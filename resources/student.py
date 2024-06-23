@@ -3,6 +3,7 @@ from flask_restful import Resource
 import jwt
 from auth_middleware import token_required
 from db_app import db
+from models.category import CategoryModel
 from models.student import StudentModel
 from models.category_student_self_description import CategoryStudentSelfDescriptionModel
 import requests
@@ -127,3 +128,83 @@ class Student(Resource):
             # It's a good practice to log the actual error for debugging
             current_app.logger.error(f"Error fetching students: {e}")
             return {'error': 'Error fetching students'}, 500
+
+
+
+class StudentCategories(Resource):
+    # def get(self):
+    #     if "Authorization" in flask_request.headers:
+    #         token = flask_request.headers["Authorization"].split(" ")[1]
+    #         decoded_token = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
+    #
+    #         student = StudentModel.query.filter_by(id=decoded_token['id']).one_or_none()
+    #
+    #         if student:
+    #             student_data = {
+    #                 'id': student.id,
+    #                 'lastname': student.lastname,
+    #                 'firstname': student.firstname,
+    #                 'id_status': student.id_status,
+    #                 'id_major': student.id_major,
+    #                 'is_blocked': student.is_blocked,
+    #                 'id_sex': student.id_sex,
+    #                 'description': student.description,
+    #                 'details_completed': student.details_completed,
+    #                 'dorm_id': student.dorm_id,
+    #                 'avatar_link': student.avatar_link,
+    #                 'year_of_study': student.year_of_study,
+    #                 'categories': [{
+    #                     'category_id': category.category_id,
+    #                     'answer': category.answer,
+    #                     'importance_score': category.importance_score
+    #                 } for category in student.self_descriptions]  # Use the correct relationship
+    #             }
+    #             return {'student': student_data}, 200
+    #         else:
+    #             return {'message': 'Student not found'}, 404
+    #     else:
+    #         return {'message': 'Access token not found'}, 400
+
+    def get(self):
+        if "Authorization" in flask_request.headers:
+            token = flask_request.headers["Authorization"].split(" ")[1]
+            decoded_token = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
+
+            student = StudentModel.query.filter_by(id=decoded_token['id']).one_or_none()
+
+            if student:
+                categories = db.session.query(
+                    CategoryStudentSelfDescriptionModel,
+                    CategoryModel.title
+                ).join(CategoryModel, CategoryStudentSelfDescriptionModel.category_id == CategoryModel.id).filter(
+                    CategoryStudentSelfDescriptionModel.student_id == student.id
+                ).all()
+
+                categories_data = [{
+                    'category_id': category.CategoryStudentSelfDescriptionModel.category_id,
+                    'answer': category.CategoryStudentSelfDescriptionModel.answer,
+                    'importance_score': category.CategoryStudentSelfDescriptionModel.importance_score,
+                    'category': category.title
+                } for category in categories]
+
+                student_data = {
+                    'id': student.id,
+                    'lastname': student.lastname,
+                    'firstname': student.firstname,
+                    'id_status': student.id_status,
+                    'id_major': student.id_major,
+                    'is_blocked': student.is_blocked,
+                    'id_sex': student.id_sex,
+                    'description': student.description,
+                    'details_completed': student.details_completed,
+                    'dorm_id': student.dorm_id,
+                    'avatar_link': student.avatar_link,
+                    'year_of_study': student.year_of_study,
+                    'categories': categories_data
+                }
+                return {'student': student_data}, 200
+            else:
+                return {'message': 'Student not found'}, 404
+        else:
+            return {'message': 'Access token not found'}, 400
+

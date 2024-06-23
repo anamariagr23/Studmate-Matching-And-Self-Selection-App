@@ -9,3 +9,4 @@ class CategoryStudentSelfDescriptionModel(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('studmate.description_category.id'))
     answer = db.Column(db.Text)
     importance_score = db.Column(db.Integer, db.CheckConstraint('importance_score BETWEEN 1 AND 10'))
+

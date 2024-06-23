@@ -27,3 +27,18 @@ class RoommateRequestModel(db.Model):
             "request_date": self.request_date.isoformat() if self.request_date else None,
             "viewed": self.viewed
         }
+
+    def to_get_all_dict(self):
+        return {
+            "request_id": self.request_id,
+            "requester_id": self.requester_id,
+            "requester_firstname": self.requester.firstname,
+            "requester_lastname": self.requester.lastname,
+            "requester_avatar": self.requester.avatar_link,
+            "target_id": self.target_id,
+            "target_firstname": self.target.firstname,
+            "target_lastname": self.target.lastname,
+            "target_avatar": self.target.avatar_link,
+            "accepted": self.accepted,
+            "request_date": self.request_date.isoformat() if self.request_date else None,
+        }
