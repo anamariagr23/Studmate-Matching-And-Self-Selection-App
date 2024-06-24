@@ -6,5 +6,5 @@ class AnswerChoiceModel(db.Model):
     __table_args__ = {'schema': 'studmate'}
 
     id = db.Column(db.Integer, primary_key=True)
-    question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('studmate.question.id'), nullable=False)
     description = db.Column(db.String(255), nullable=False)

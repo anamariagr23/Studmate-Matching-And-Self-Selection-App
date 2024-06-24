@@ -6,7 +6,7 @@ class QuestionModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(255), nullable=False)
-    id_survey = db.Column(db.Integer, db.ForeignKey('survey.id'), nullable=False)
+    id_survey = db.Column(db.Integer, db.ForeignKey('studmate.survey.id'), nullable=False)
     multiple_choice = db.Column(db.Boolean, nullable=False, default=False)
 
     # Relationship to AnswerChoice
